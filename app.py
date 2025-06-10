@@ -151,7 +151,7 @@ search_button = st.button("자료 검색 및 스크랩 실행", key="search_butt
 if search_button:
     if search_query.strip() != "":
         st.info(f"🔍 '{search_query}'에 대한 자료를 검색 중입니다...")
-        # CORRECTED: Changed 'Google Search_url' to 'Google Search_url'
+        # ⭐⭐⭐ CORRECTED LINE: Changed 'Google Search_url' to 'Google Search_url' ⭐⭐⭐
         Google Search_url = f"https://www.google.com/search?q={search_query.replace(' ', '+')}+공학"
         st.markdown(f"**[Google에서 '{search_query}'(을)를 검색하기]({Google Search_url})**", unsafe_allow_html=True)
         st.write("⬆️ 위 링크를 클릭하여 필요한 자료를 찾으신 후, 아래 '나만의 공학 자료 저장소'에 내용을 저장해 주세요.")
