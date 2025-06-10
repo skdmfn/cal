@@ -1,7 +1,5 @@
 import streamlit as st
 import json
-import requests # 웹 요청에 사용 (스크랩 기능 확장 시 활용)
-from bs4 import BeautifulSoup # HTML 파싱에 사용 (스크랩 기능 확장 시 활용)
 
 # --- 설정 ---
 # 이 파일에 공학 자료들이 영구적으로 저장됩니다.
@@ -136,34 +134,10 @@ except Exception as e:
 st.markdown("---")
 
 # ------------------------------
-# 기능 2: 공학 자료 검색 및 스크랩
+# 기능 2: 나만의 공학 자료 저장소
+# (기존 기능 3번이 2번으로 변경됨)
 # ------------------------------
-st.header("2️⃣ 공학 자료 검색 및 스크랩")
-st.write("궁금한 공학 개념이나 자료를 검색하고, 필요한 정보를 스크랩하여 저장해 보세요.")
-
-search_query = st.text_input(
-    "검색할 공학 자료 키워드를 입력하세요 (예: '열역학 제1법칙', '파이썬 데이터 분석')",
-    key="search_query_input",
-    placeholder="검색할 키워드를 입력하세요"
-)
-search_button = st.button("자료 검색 및 스크랩 실행", key="search_button")
-
-if search_button:
-    if search_query.strip() != "":
-        st.info(f"🔍 '{search_query}'에 대한 자료를 검색 중입니다...")
-        # ⭐⭐⭐ CORRECTED LINE: Changed 'Google Search_url' to 'Google Search_url' ⭐⭐⭐
-        Google Search_url = f"https://www.google.com/search?q={search_query.replace(' ', '+')}+공학"
-        st.markdown(f"**[Google에서 '{search_query}'(을)를 검색하기]({Google Search_url})**", unsafe_allow_html=True)
-        st.write("⬆️ 위 링크를 클릭하여 필요한 자료를 찾으신 후, 아래 '나만의 공학 자료 저장소'에 내용을 저장해 주세요.")
-    else:
-        st.warning("⚠️ 검색 키워드를 입력해 주세요.")
-
-st.markdown("---")
-
-# ------------------------------
-# 기능 3: 나만의 공학 자료 저장소
-# ------------------------------
-st.header("3️⃣ 나만의 공학 자료 저장소")
+st.header("2️⃣ 나만의 공학 자료 저장소")
 st.write("자신만의 공학 지식과 자료를 체계적으로 저장하고 관리하세요.")
 
 title = st.text_input("자료 제목을 입력하세요", key="note_title", placeholder="예: 푸리에 변환의 응용 원리")
