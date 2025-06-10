@@ -1,7 +1,8 @@
 import streamlit as st
 import json
 
-# --- 설정 ---
+# --- Configuration ---
+# This file will store your engineering notes persistently.
 DATA_FILE = 'engineering_notes.json'
 
 st.set_page_config(
@@ -13,9 +14,10 @@ st.set_page_config(
 st.title("⚙️ 공학 자료 관리 및 유틸리티")
 st.markdown("---")
 
-# --- 데이터 영속성을 위한 헬퍼 함수 ---
+# --- Helper Functions for Data Persistence ---
 
 def load_notes():
+    """Loads saved notes from the JSON file."""
     try:
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -26,18 +28,18 @@ def load_notes():
         return []
 
 def save_notes(notes):
+    """Saves the current list of notes to the JSON file."""
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(notes, f, indent=4, ensure_ascii=False)
 
 if 'notes' not in st.session_state:
     st.session_state.notes = load_notes()
 
-# Initialize a flag to control input clearing on rerun
 if 'clear_inputs' not in st.session_state:
     st.session_state.clear_inputs = False
 
 # ------------------------------
-# 기능 1: 공학 단위 변환기
+# Feature 1: Engineering Unit Converter
 # ------------------------------
 st.header("1️⃣ 공학 단위 변환기")
 st.write("다양한 공학 단위를 손쉽게 변환해 보세요.")
@@ -96,30 +98,23 @@ with col2:
     elif unit_category == "에너지":
         from_unit = st.selectbox("시작 단위", ["J", "kJ", "cal", "kcal", "Wh", "kWh"], key="energy_from")
         to_unit = st.selectbox("변환할 단위", ["J", "kJ", "cal", "kcal", "Wh", "kWh"], key="energy_to")
+        # CORRECTED: Energy conversion factors relative to 'J' (Joule)
+        # This matches the structure of other unit categories for consistent conversion logic.
         conversions = {
-            "J": 1.0, "kJ": 1000.0, "cal": 0.239006, "kcal": 0.000239006, "Wh": 0.000277778, "kWh": 0.000000277778},
-            "kJ": {"J": 1000, "cal": 239.006, "kcal": 0.239006, "Wh": 0.277778, "kWh": 0.000277778},
-            "cal": {"J": 4.184, "kJ": 0.004184, "kcal": 0.001, "Wh": 0.00116222, "kWh": 0.00000116222},
-            "kcal": {"J": 4184, "kJ": 4.184, "cal": 1000, "Wh": 1.16222, "kWh": 0.00116222},
-            "Wh": {"J": 3600, "kJ": 3.6, "cal": 859.845, "kcal": 0.859845, "kWh": 0.001},
-            "kWh": {"J": 3600000, "kJ": 3600, "cal": 859845, "kcal": 859.845, "Wh": 1000}
+            "J": 1.0,        # 1 Joule is 1 Joule
+            "kJ": 1000.0,    # 1 kiloJoule is 1000 Joules
+            "cal": 4.184,    # 1 calorie is 4.184 Joules (thermochemical calorie)
+            "kcal": 4184.0,  # 1 kilocalorie is 4184 Joules
+            "Wh": 3600.0,    # 1 Watt-hour is 3600 Joules
+            "kWh": 3600000.0 # 1 kiloWatt-hour is 3,600,000 Joules
         }
 
 try:
     if from_unit == to_unit:
         result = value
-    elif unit_category == "온度": # Typo: Should be "온도"
+    elif unit_category == "온도": # Corrected the typo from "온度" to "온도"
         result = convert_temperature(value, from_unit, to_unit)
     else:
-        # Corrected approach for unit conversion (value * from_unit_to_base / to_unit_to_base)
-        # This assumes 'conversions' map unit to its value in a common base unit.
-        # If 'conversions' are direct factors (e.g., m -> cm is 100), then this logic needs adjustment.
-        # Let's assume 'conversions' store the value of 1 unit in the base unit.
-        
-        # Example: if conversions = {"m": 1.0, "cm": 0.01}
-        # To convert 100 cm to m: (100 * conversions["cm"]) / conversions["m"]
-        # (100 * 0.01) / 1.0 = 1.0 m. This is correct.
-        
         value_in_base = value * conversions[from_unit]
         result = value_in_base / conversions[to_unit]
             
@@ -134,7 +129,7 @@ except Exception as e:
 st.markdown("---")
 
 # ------------------------------
-# 기능 2: 나만의 공학 자료 저장소
+# Feature 2: Personal Engineering Data Storage
 # ------------------------------
 st.header("2️⃣ 나만의 공학 자료 저장소")
 st.write("자신만의 공학 지식과 자료를 체계적으로 저장하고 관리하세요.")
@@ -165,47 +160,40 @@ def save_note_callback():
             "content": st.session_state.note_content,
             "link": st.session_state.note_link
         })
-        save_notes(st.session_state.notes) # Save updated notes to the JSON file
+        save_notes(st.session_state.notes)
         st.success(f"✔️ '{st.session_state.note_title}' 자료가 성공적으로 저장되었습니다.")
         
-        # Set the flag to clear inputs on the next rerun
         st.session_state.clear_inputs = True
-        st.rerun() # Re-run to clear inputs and refresh the list
+        st.rerun()
 
-# Save button now calls the callback function
 st.button("➕ 새 자료 저장하기", key="save_note_button", on_click=save_note_callback)
-
 
 st.markdown("---")
 
 st.subheader("📝 저장된 자료 목록")
 
 if st.session_state.notes:
-    # All notes deletion function (called by button)
     def clear_all_notes_callback():
         st.session_state.notes = []
         save_notes(st.session_state.notes)
         st.success("모든 자료가 성공적으로 삭제되었습니다.")
-        st.rerun() # Refresh to show empty list
+        st.rerun()
 
     if st.button("🗑️ 모든 자료 삭제", key="clear_all_notes_button", on_click=clear_all_notes_callback):
-        pass # The action is handled by the callback
+        pass
 
-    # Display each note
     for i, note in enumerate(st.session_state.notes):
         st.markdown(f"### {i+1}. {note['title']}")
         st.write(note['content'])
         if note['link'].strip() != "":
             st.markdown(f"[🔗 참고 링크]({note['link']})")
         
-        # Function to delete a single note
         def delete_single_note_callback(index_to_delete):
             st.session_state.notes.pop(index_to_delete)
             save_notes(st.session_state.notes)
             st.success(f"자료가 삭제되었습니다.")
             st.rerun()
 
-        # Each note's delete button now calls the callback with its index
         st.button(f"삭제: '{note['title']}'", key=f"delete_note_{i}", on_click=delete_single_note_callback, args=(i,))
         
         st.markdown("---")
