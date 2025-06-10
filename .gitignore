@@ -1,194 +1,66 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import streamlit as st
 
-# C extensions
-*.so
+st.title("⚙️ 공학 계산기 & 나만의 AI·공학 자료 저장소")
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# ------------------------------
+# 기능 1: 옴의 법칙 계산기
+# ------------------------------
+st.header("1️⃣ 옴의 법칙 계산기 (V = I × R)")
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+calc_option = st.selectbox("계산할 값 선택", ["전압(V)", "전류(I)", "저항(R)"])
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+try:
+    if calc_option == "전압(V)":
+        current = st.number_input("전류 I (A)", min_value=0.0, value=0.0)
+        resistance = st.number_input("저항 R (Ω)", min_value=0.0, value=1.0)
+        voltage = current * resistance
+        st.write(f"전압 V = {voltage:.2f} V")
+    elif calc_option == "전류(I)":
+        voltage = st.number_input("전압 V (V)", min_value=0.0, value=0.0)
+        resistance = st.number_input("저항 R (Ω)", min_value=0.0, value=1.0)
+        current = voltage / resistance if resistance != 0 else 0
+        st.write(f"전류 I = {current:.2f} A")
+    elif calc_option == "저항(R)":
+        voltage = st.number_input("전압 V (V)", min_value=0.0, value=0.0)
+        current = st.number_input("전류 I (A)", min_value=0.0, value=1.0)
+        resistance = voltage / current if current != 0 else 0
+        st.write(f"저항 R = {resistance:.2f} Ω")
+except Exception as e:
+    st.error(f"오류가 발생했습니다: {e}")
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+# ------------------------------
+# 기능 2: 사용자 자료 저장소
+# ------------------------------
+st.header("2️⃣ 나만의 AI·공학 자료 저장소")
 
-# Translations
-*.mo
-*.pot
+# 자료 입력 받기
+title = st.text_input("자료 제목을 입력하세요")
+content = st.text_area("내용을 입력하세요")
+link = st.text_input("참고 링크(URL)를 입력하세요 (선택)")
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+# 저장 버튼
+if st.button("저장하기"):
+    if title.strip() == "" or content.strip() == "":
+        st.error("제목과 내용은 반드시 입력해야 합니다.")
+    else:
+        # 기존에 저장된 리스트 불러오기 (세션 상태 활용)
+        if 'notes' not in st.session_state:
+            st.session_state.notes = []
+        st.session_state.notes.append({
+            "title": title,
+            "content": content,
+            "link": link
+        })
+        st.success(f"'{title}' 자료가 저장되었습니다.")
 
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# UV
-#   Similar to Pipfile.lock, it is generally recommended to include uv.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#uv.lock
-
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
-
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
-.pdm.toml
-.pdm-python
-.pdm-build/
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
-
-# Abstra
-# Abstra is an AI-powered process automation framework.
-# Ignore directories containing user credentials, local state, and settings.
-# Learn more at https://abstra.io/docs
-.abstra/
-
-# Visual Studio Code
-#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
-#  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
-#  you could uncomment the following to ignore the enitre vscode folder
-# .vscode/
-
-# Ruff stuff:
-.ruff_cache/
-
-# PyPI configuration file
-.pypirc
-
-# Cursor
-#  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
-#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
-#  refer to https://docs.cursor.com/context/ignore-files
-.cursorignore
-.cursorindexingignore
+# 저장된 자료 보여주기
+if 'notes' in st.session_state and st.session_state.notes:
+    st.subheader("저장된 자료 목록")
+    for i, note in enumerate(st.session_state.notes):
+        st.markdown(f"### {i+1}. {note['title']}")
+        st.write(note['content'])
+        if note['link'].strip() != "":
+            st.markdown(f"[참고 링크]({note['link']})")
+        st.markdown("---")
+else:
+    st.info("아직 저장된 자료가 없습니다.")
